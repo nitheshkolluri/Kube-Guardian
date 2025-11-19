@@ -1,0 +1,5 @@
+{
+  "name": "Kube-Guardian",
+  "description": "Enterprise-grade AI SRE Agent with PII Redaction, Audit Logging, and Zero-Trust Architecture for multi-cloud Kubernetes clusters.",
+  "requestFramePermissions": []
+}
