@@ -1,23 +1,23 @@
-import path from 'path';
-import { defineConfig, loadEnv } from 'vite';
-import react from '@vitejs/plugin-react';
+import { defineConfig, loadEnv } from 'vite'
+import react from '@vitejs/plugin-react'
 
+// https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
-    const env = loadEnv(mode, '.', '');
-    return {
-      server: {
-        port: 3000,
-        host: '0.0.0.0',
-      },
-      plugins: [react()],
-      define: {
-        'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-        'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
-      },
-      resolve: {
-        alias: {
-          '@': path.resolve(__dirname, '.'),
-        }
-      }
-    };
-});
+  // Load env file based on `mode` in the current working directory.
+  // Set the third parameter to '' to load all env regardless of the `VITE_` prefix.
+  const env = loadEnv(mode, (process as any).cwd(), '');
+
+  // Security Warning
+  if (!env.API_KEY) {
+    console.warn("\x1b[33m%s\x1b[0m", "⚠️  WARNING: API_KEY is not set in your .env file. The app will fail to connect to Gemini AI.");
+  }
+
+  return {
+    plugins: [react()],
+    define: {
+      // Polyfill process.env for the existing code to work
+      // We explicitly only expose API_KEY to prevent leaking other secrets from the host machine
+      'process.env.API_KEY': JSON.stringify(env.API_KEY)
+    }
+  }
+})

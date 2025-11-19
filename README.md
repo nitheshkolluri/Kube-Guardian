@@ -1,91 +1,81 @@
-# SafeDrive - Smart Navigation & Rewards
+# Kube-Guardian
 
-![SafeDrive Logo](https://raw.githubusercontent.com/user-attachments/assets/b248443e-d958-466d-8869-7c8a6f3b0e16)
+**Enterprise-grade AI SRE Agent for Kubernetes**
 
-**SafeDrive** is a production-grade, enterprise-level navigation application designed to promote safer driving habits through a sophisticated rewards system. It combines a seamless, Google-Maps-like user experience with an intelligent business model, making it a complete and deployable platform.
+Kube-Guardian is a React-based dashboard that simulates a "Day 2" Operations Agent. It utilizes Google Gemini AI to perform Root Cause Analysis (RCA) on failing Kubernetes pods. It features a Zero-Trust architecture with client-side PII redaction before logs are sent to the LLM.
 
----
+## Features
 
-## ✨ Key Features
+- **AI-Driven RCA**: Automatic detection and analysis of `CrashLoopBackOff`, `OOMKilled`, and other pod errors.
+- **PII Redaction Engine**: Client-side Regex-based sanitization of IPs, Emails, and Keys.
+- **Immutable Audit Log**: Tracks every analysis request and applied patch.
+- **Multi-Cloud Support**: Visual indicators for AWS, GCP, and Azure workloads.
+- **Simulated Chaos**: Includes a "Chaos Monkey" mode to randomly break pods for testing.
 
--   **Intuitive Turn-by-Turn Navigation:** A clean, full-screen map interface with a floating search bar, saved places (Home/Work), and interactive points of interest (POIs).
--   **Advanced Driving Analytics:** Real-time monitoring of speed, acceleration, braking, and turning to generate a comprehensive safety score for each trip.
--   **Rewards & Gamification:** Earn points for safe driving and redeem them for exclusive rewards from partner businesses.
--   **Multi-Modal Driver Verification:** Sophisticated checks to ensure accurate data collection, whether the phone is mounted, handheld, or connected to CarPlay.
--   **Dedicated Support Hub:** An in-app chatbot for instant answers and a direct line to customer support for critical issues.
--   **Professional & Secure Architecture:** Built with security best practices and containerized with Docker for scalable, production-ready deployment.
+## Prerequisites
 
-## 🛠️ Tech Stack
+- Node.js 18+
+- Docker (for containerized deployment)
+- Google Gemini API Key
 
--   **Frontend:** React, TypeScript, Tailwind CSS
--   **Mapping:** Leaflet.js, OpenStreetMap, Leaflet Routing Machine
---   **Deployment:** Docker, Nginx
+## 🛡️ Security & Configuration (Crucial)
 
-## 🚀 Getting Started
+Since this is a client-side application, managing your API key securely is critical, especially in public repositories.
 
-### Prerequisites
+1.  **Get your API Key**:
+    Obtain a key from [Google AI Studio](https://aistudio.google.com/).
 
--   Node.js (v18 or later)
--   A modern web browser with location services enabled.
--   Docker (for containerized deployment)
-
-### Running Locally
-
-1.  **Clone the repository:**
-    ```bash
-    git clone <repository-url>
-    cd safedrive-app
+2.  **Configure Environment**:
+    Create a `.env` file in the root directory. **DO NOT COMMIT THIS FILE**.
+    ```env
+    API_KEY=your_google_gemini_api_key_here
     ```
 
-2.  **Serve the application:**
-    Since this project uses modern ES modules and has no external npm dependencies, you can serve it directly with any simple static server. A common choice is `http-server`:
-    ```bash
-    # Install the server globally (if you haven't already)
-    npm install -g http-server
+3.  **Verify Git Ignore**:
+    Ensure your `.gitignore` includes `.env` to prevent accidental leaks to GitHub.
 
-    # Run the server from the project root
-    http-server .
+4.  **Apply API Key Restrictions (Production/Deployment)**:
+    Because the API key is used in the browser, it is technically visible to the user. To prevent abuse:
+    - Go to **Google Cloud Console > APIs & Services > Credentials**.
+    - Edit your API Key.
+    - Under **Application restrictions**, select **Websites**.
+    - Add the URL of your deployed application (e.g., `https://kube-guardian.vercel.app`, `http://localhost:8080`).
+    - Save changes. The key will now reject requests from any other domain.
+
+## Local Development
+
+1.  Clone the repository.
+2.  Install dependencies:
+    ```bash
+    npm install
+    ```
+3.  Run the development server:
+    ```bash
+    npm run dev
     ```
 
-3.  **Access the app:**
-    Open your browser and navigate to `http://localhost:8080`. For the geolocation features to work, you must allow location permissions when prompted.
+## Production Build (Docker)
 
-## 🐳 Deployment
+This project is optimized for Docker. The build process uses a multi-stage approach.
 
-This application is configured for easy, scalable deployment using Docker and is optimized for serverless platforms like Google Cloud Run.
+### Build the Image
 
-The included `Dockerfile` creates a production-ready Nginx image that serves the application. It's designed to be flexible by listening on the port specified by the `PORT` environment variable, which is standard for cloud platforms.
+```bash
+# Pass the API Key as a build argument.
+# WARNING: In a real CI/CD pipeline, ensure this variable is injected securely.
+docker build --build-arg API_KEY=${API_KEY} -t kube-guardian .
+```
 
-### Building and Running Locally with Docker
+### Run the Container
 
-1.  **Build the Docker image:**
-    From the root of the project, run:
-    ```bash
-    docker build -t safedrive-app .
-    ```
+```bash
+docker run -p 8080:80 kube-guardian
+```
 
-2.  **Run the Docker container:**
-    To simulate a cloud environment, you must provide the `PORT` variable. This command runs the app on port `8080`.
-    ```bash
-    docker run -p 8080:8080 -e PORT=8080 safedrive-app
-    ```
-    You can now access the application at `http://localhost:8080`.
+Access the dashboard at `http://localhost:8080`.
 
-### Deploying to Google Cloud Run
+## Security Architecture
 
-This setup is ideal for Google Cloud Run. When you deploy the container, Cloud Run will automatically provide the `PORT` environment variable, and the container will start and listen correctly, resolving the initial deployment failure.
-
-## 🔒 Security & Compliance
-
-Security is a top priority for SafeDrive. We adhere to industry best practices to protect user data and ensure a trustworthy experience.
-
--   **Data in Transit:** All communication with backend services (even mocked ones) should be over HTTPS. The provided deployment setup assumes a production environment would be configured behind a load balancer with an SSL/TLS certificate.
--   **User Privacy:** We are committed to user privacy. Location data is used only for trip analysis and is never shared with third parties without explicit consent. See our `PRIVACY.md` for full details.
--   **Input Sanitization:** Although this is a frontend application, we operate on the principle of never trusting user input. Any data sent to a backend would be sanitized and validated.
--   **Dependency Management:** In a real-world scenario with npm dependencies, we would use tools like `npm audit` or GitHub's Dependabot to monitor for vulnerabilities.
-
-For a detailed breakdown of our security policies and practices, please refer to the `SECURITY.md` file.
-
-## 📈 Business Model
-
-SafeDrive operates on a B2B2C (Business-to-Business-to-Consumer) model that creates value for both our users and our partners. For a comprehensive overview of our monetization strategy, revenue streams, and partnership opportunities, please see the `BUSINESS_MODEL.md` file.
+- **Redaction**: Logs are sanitized in `services/geminiService.ts` before API calls.
+- **Nginx**: Configured with security headers (`X-Frame-Options`, `X-Content-Type-Options`).
+- **Non-Root**: The application serves static files; consider configuring Nginx to run as non-root for stricter environments.
