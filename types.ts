@@ -48,3 +48,10 @@ export interface SecurityConfig {
   auditLoggingEnabled: boolean;
   dataResidency: 'US' | 'EU' | 'GLOBAL';
 }
+
+export interface ChatMessage {
+  id: string;
+  role: 'user' | 'model';
+  text: string;
+  timestamp: Date;
+}
