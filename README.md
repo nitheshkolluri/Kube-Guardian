@@ -1,81 +1,128 @@
 # Kube-Guardian
 
-**Enterprise-grade AI SRE Agent for Kubernetes**
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Version](https://img.shields.io/badge/version-2.5.0-cyan.svg)
+![Status](https://img.shields.io/badge/status-Production%20Ready-emerald.svg)
 
-Kube-Guardian is a React-based dashboard that simulates a "Day 2" Operations Agent. It utilizes Google Gemini AI to perform Root Cause Analysis (RCA) on failing Kubernetes pods. It features a Zero-Trust architecture with client-side PII redaction before logs are sent to the LLM.
+**The Enterprise-Grade AI SRE Agent for Kubernetes**
 
-## Features
+Kube-Guardian is a next-generation observability and remediation platform designed for Day 2 Operations. It leverages **Google Gemini models** to provide autonomous Root Cause Analysis (RCA), PII redaction, and self-healing capabilities for multi-cloud Kubernetes clusters (AWS, GCP, Azure).
 
-- **AI-Driven RCA**: Automatic detection and analysis of `CrashLoopBackOff`, `OOMKilled`, and other pod errors.
-- **PII Redaction Engine**: Client-side Regex-based sanitization of IPs, Emails, and Keys.
-- **Immutable Audit Log**: Tracks every analysis request and applied patch.
-- **Multi-Cloud Support**: Visual indicators for AWS, GCP, and Azure workloads.
-- **Simulated Chaos**: Includes a "Chaos Monkey" mode to randomly break pods for testing.
+---
 
-## Prerequisites
+## 🚀 Features
 
-- Node.js 18+
-- Docker (for containerized deployment)
-- Google Gemini API Key
+### 🧠 Neural Analysis Engine
+*   **Automated RCA**: Instantly diagnoses `CrashLoopBackOff`, `OOMKilled`, and `ImagePullBackOff` errors.
+*   **Contextual Awareness**: Correlates pod logs with YAML manifests to find configuration drift.
+*   **Remediation Patching**: Generates ready-to-apply YAML fixes with a confidence score.
 
-## 🛡️ Security & Configuration (Crucial)
+### 🛡️ Zero-Trust Security
+*   **Client-Side Redaction**: Sensitive data (IPs, Emails, AWS Keys) is masked *before* leaving the browser.
+*   **Secure Gateway**: Connects to clusters via a read-only Nginx reverse proxy with TLS termination.
+*   **Audit Logging**: Immutable record of all AI analysis and remediation attempts.
 
-Since this is a client-side application, managing your API key securely is critical, especially in public repositories.
+### 🌐 Multi-Cloud Topology
+*   **Unified Glass**: Single pane of glass for clusters across AWS Sydney, GCP Melbourne, and Azure Canberra.
+*   **Network Mapping**: Visual topology of node distribution and region latency.
 
-1.  **Get your API Key**:
-    Obtain a key from [Google AI Studio](https://aistudio.google.com/).
+---
 
-2.  **Configure Environment**:
-    Create a `.env` file in the root directory. **DO NOT COMMIT THIS FILE**.
-    ```env
-    API_KEY=your_google_gemini_api_key_here
+## 🏗️ Architecture
+
+```mermaid
+graph TD
+    User[DevOps Engineer] -->|HTTPS| Dashboard[React Dashboard]
+    Dashboard -->|Redacted Logs| AI[Google Gemini API]
+    Dashboard -->|Secure Tunnel| Gateway[Guardian Agent / Nginx]
+    Gateway -->|In-Cluster API| K8s[Kubernetes API Server]
+    
+    subgraph Browser
+    Dashboard
+    Redactor[PII Redaction Engine]
+    end
+    
+    subgraph "Kubernetes Cluster"
+    Gateway
+    K8s
+    end
+```
+
+---
+
+## 🛠️ Getting Started
+
+### Prerequisites
+*   Node.js 18+
+*   Google Gemini API Key
+*   Kubernetes Cluster (Minikube, EKS, GKE, or AKS)
+
+### Installation
+
+1.  **Clone the Repository**
+    ```bash
+    git clone https://github.com/kubeguardian/console.git
+    cd console
     ```
 
-3.  **Verify Git Ignore**:
-    Ensure your `.gitignore` includes `.env` to prevent accidental leaks to GitHub.
-
-4.  **Apply API Key Restrictions (Production/Deployment)**:
-    Because the API key is used in the browser, it is technically visible to the user. To prevent abuse:
-    - Go to **Google Cloud Console > APIs & Services > Credentials**.
-    - Edit your API Key.
-    - Under **Application restrictions**, select **Websites**.
-    - Add the URL of your deployed application (e.g., `https://kube-guardian.vercel.app`, `http://localhost:8080`).
-    - Save changes. The key will now reject requests from any other domain.
-
-## Local Development
-
-1.  Clone the repository.
-2.  Install dependencies:
+2.  **Install Dependencies**
     ```bash
     npm install
     ```
-3.  Run the development server:
+
+3.  **Configure Environment**
+    Copy the example environment file and add your API key.
+    ```bash
+    cp .env.example .env
+    # Edit .env and set API_KEY=your_gemini_key
+    ```
+
+4.  **Run Development Server**
     ```bash
     npm run dev
     ```
 
-## Production Build (Docker)
+---
 
-This project is optimized for Docker. The build process uses a multi-stage approach.
+## 🔌 Connecting a Cluster
 
-### Build the Image
+Kube-Guardian uses a **Secure Gateway Agent** model. To connect your cluster:
 
-```bash
-# Pass the API Key as a build argument.
-# WARNING: In a real CI/CD pipeline, ensure this variable is injected securely.
-docker build --build-arg API_KEY=${API_KEY} -t kube-guardian .
-```
+1.  Click **"Connect Node"** in the Dashboard top-right corner.
+2.  Enter your DNS Domain (e.g., `guardian.corp.com`).
+3.  The dashboard will generate a Kubernetes Manifest (`guardian.yaml`).
+4.  Apply the manifest to your cluster:
+    ```bash
+    kubectl apply -f guardian.yaml
+    ```
+5.  Retrieve the Service Token and paste it into the dashboard to establish the uplink.
 
-### Run the Container
+---
 
-```bash
-docker run -p 8080:80 kube-guardian
-```
+## 🤝 Contributing
 
-Access the dashboard at `http://localhost:8080`.
+We welcome contributions from the community! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
 
-## Security Architecture
+1.  Fork the Project
+2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4.  Push to the Branch (`git push origin feature/AmazingFeature`)
+5.  Open a Pull Request
 
-- **Redaction**: Logs are sanitized in `services/geminiService.ts` before API calls.
-- **Nginx**: Configured with security headers (`X-Frame-Options`, `X-Content-Type-Options`).
-- **Non-Root**: The application serves static files; consider configuring Nginx to run as non-root for stricter environments.
+---
+
+## 🔒 Security
+
+For security vulnerabilities, please do not open a public issue. See [SECURITY.md](SECURITY.md) for reporting instructions.
+
+---
+
+## 📄 License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+---
+
+<div align="center">
+  <sub>Built with ❤️ in Melbourne, Australia</sub>
+</div>

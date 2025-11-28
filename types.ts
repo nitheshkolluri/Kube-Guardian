@@ -10,9 +10,9 @@ export interface Pod {
   image: string;
   cpuUsage: string;
   memoryUsage: string;
-  logs: string[]; // Simulated log lines
-  manifest: string; // The YAML configuration
-  cloudProvider: 'AWS' | 'GCP' | 'Azure';
+  logs: string[]; 
+  manifest: string;
+  cloudProvider: 'AWS' | 'GCP' | 'Azure' | 'Generic';
 }
 
 export interface ClusterEvent {
@@ -32,16 +32,6 @@ export interface AnalysisResult {
   confidence: number;
 }
 
-export interface AuditLog {
-  id: string;
-  timestamp: Date;
-  action: 'ANALYSIS_REQUEST' | 'PATCH_APPLIED' | 'ACCESS_DENIED';
-  user: string;
-  resource: string;
-  details: string;
-  complianceHash: string; // Simulated hash for immutability
-}
-
 export interface SecurityConfig {
   redactionLevel: 'NONE' | 'BASIC' | 'STRICT';
   requireHumanApproval: boolean;
@@ -55,3 +45,5 @@ export interface ChatMessage {
   text: string;
   timestamp: Date;
 }
+
+export type PricingTier = 'COMMUNITY' | 'PRO' | 'ENTERPRISE';

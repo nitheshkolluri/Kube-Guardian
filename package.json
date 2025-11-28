@@ -1,12 +1,33 @@
 {
   "name": "kube-guardian",
-  "version": "1.0.0",
+  "version": "2.5.0",
   "type": "module",
-  "description": "AI-Driven SRE Agent for Kubernetes",
+  "description": "Enterprise-grade AI SRE Agent with Zero-Trust Architecture for Kubernetes.",
+  "author": "KubeGuardian Engineering <engineering@kubeguardian.io>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kubeguardian/console.git"
+  },
+  "keywords": [
+    "kubernetes",
+    "sre",
+    "ai",
+    "gemini",
+    "operations",
+    "dashboard",
+    "react",
+    "typescript"
+  ],
+  "bugs": {
+    "url": "https://github.com/kubeguardian/console/issues"
+  },
+  "homepage": "https://kubeguardian.io",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
   },
   "dependencies": {
     "react": "^18.2.0",
